@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Base64;
 
 public class Post_urlConnection {
     public static void main(String[] args){
@@ -81,6 +82,12 @@ public class Post_urlConnection {
             childObject.put("checkout", "2023-03-02");
             jsonObject.put("bookingdates", childObject);
             jsonObject.put("additionalneeds", "Brunch");
+
+
+            //          Fetching authentication token
+            String basicAuth = "Authentication : " + new String(Base64.getEncoder().encode(jsonObject.toString().getBytes()));
+            System.out.println(basicAuth);
+
             try (OutputStream os = connection.getOutputStream()) {
                 os.write(jsonObject.toString().getBytes());
                 os.flush();
