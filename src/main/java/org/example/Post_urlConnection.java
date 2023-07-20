@@ -12,19 +12,23 @@ public class Post_urlConnection {
     public static void main(String[] args){
         int id = 0;//to use the id for put method
         try {
-            URL url = new URL("https://restful-booker.herokuapp.com/booking");
+            URL url = new URL(Resources.url);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
-
+            //--Headers
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("Accept", "application/json");
             conn.setDoOutput(true);
 
+            //--To Post the data in JSON Format
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("firstname", "abc");
             jsonObject.put("lastname", "def");
             jsonObject.put("totalprice", 112);
             jsonObject.put("depositpaid", true);
+
+            //--ChildObject for nested JSON data
+
             JSONObject childObject = new JSONObject();
             childObject.put("checkin", "2018-03-02");
             childObject.put("checkout", "2019-03-02");
@@ -37,6 +41,7 @@ public class Post_urlConnection {
                 outputStream.flush();
             }
 
+            //----------To get the Id we will split the string and get the id
             if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
                     String line;
@@ -46,6 +51,8 @@ public class Post_urlConnection {
                         id = Integer.parseInt(arr[1]);
                         System.out.println(line);
                     }
+
+                    //---------To Disconnect the current server
                     conn.disconnect();
                 }
             } else {
@@ -61,7 +68,7 @@ public class Post_urlConnection {
 
         System.out.println("-------------------Changed Values------------------");
         try {
-            URL url = new URL("https://restful-booker.herokuapp.com/booking/" + id);
+            URL url = new URL(Resources.url+"/"+ id);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("PUT");
 
@@ -69,7 +76,7 @@ public class Post_urlConnection {
             connection.setRequestProperty("Accept", "application/json");
 
             //Authorization required
-            connection.setRequestProperty("Authorization", "Basic YWRtaW46cGFzc3dvcmQxMjM=");
+            connection.setRequestProperty("Authorization", Resources.auth);
             connection.setDoOutput(true);
 
             JSONObject jsonObject = new JSONObject();
@@ -85,6 +92,7 @@ public class Post_urlConnection {
 
 
             //          Fetching authentication token
+
             String basicAuth = "Authentication : " + new String(Base64.getEncoder().encode(jsonObject.toString().getBytes()));
             System.out.println(basicAuth);
 
@@ -92,6 +100,8 @@ public class Post_urlConnection {
                 os.write(jsonObject.toString().getBytes());
                 os.flush();
             }
+
+            //-------This will print the output
             if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
                     String str;
